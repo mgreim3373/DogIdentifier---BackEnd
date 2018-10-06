@@ -10,8 +10,8 @@ curl "${API}${URL_PATH}" \
   --header "Authorization: Bearer ${TOKEN}" \
   --data '{
     "dog": {
-      "text": "'"${TEXT}"'",
-      "title": "'"${TITLE}"'"
+      "image": "'"${IMAGE}"'",
+      "description": "'"${DESCRIPTION}"'"
     }
   }'
 
