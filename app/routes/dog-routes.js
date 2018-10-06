@@ -1,31 +1,28 @@
 // Express docs: http://expressjs.com/en/api.html
 const express = require('express')
 // export GOOGLE_APPLICATION_CREDENTIALS="/Users/mikegreim/wdi/projects/dogFinder/express-api-template/keys.json"
-const vision = require('@google-cloud/vision')
-const client = new vision.ImageAnnotatorClient()
+// const vision = require('@google-cloud/vision')
+// const client = new vision.ImageAnnotatorClient()
 
 // google vision request
-client
-  .labelDetection('/Users/mikegreim/wdi/projects/dogFinder/express-api-template/download.jpeg')
-  .then(results => {
-    const labels = results[0].labelAnnotations;
-
-    console.log('Labels:');
-    labels.forEach(label => console.log(label.description));
-  })
-  .catch(err => {
-    console.error('ERROR:', err);
-  });
+// client
+//   .labelDetection('/Users/mikegreim/wdi/projects/dogFinder/express-api-template/1a5a259bdbdb2155a5cb46de25caeaba.jpg')
+//   .then(results => {
+//     const labels = results[0].labelAnnotations;
+//
+//     console.log('data');
+//     labels.forEach(label => console.log(label.description, label.score));
+//   })
+//   .catch(err => {
+//     console.error('ERROR:', err);
+//   });
 // google vision request end
-
-
-
 
 // Passport docs: http://www.passportjs.org/docs/
 const passport = require('passport')
 
 // pull in Mongoose model for examples
-const Example = require('../models/example')
+const Dog = require('../models/dog')
 
 // we'll use this to intercept any errors that get thrown and send them
 // back to the client with the appropriate status code
@@ -50,17 +47,20 @@ const requireToken = passport.authenticate('bearer', { session: false })
 const router = express.Router()
 
 // INDEX
-// GET /examples
-router.get('/examples', requireToken, (req, res) => {
-  Example.find()
-    .then(examples => {
-      // `examples` will be an array of Mongoose documents
+// GET /dogs
+router.get('/dogs', requireToken, (req, res) => {
+  Dog.find()
+      // handle404 = if there is not data, return error message
+      // else return the data
+    .then(handle404)
+    .then(dogs => {
+      // `dogs` will be an array of Mongoose documents
       // we want to convert each one to a POJO, so we use `.map` to
       // apply `.toObject` to each one
-      return examples.map(example => example.toObject())
+      return dogs.map(dog => dog.toObject())
     })
-    // respond with status 200 and JSON of the examples
-    .then(examples => res.status(200).json({ examples: examples }))
+    // respond with status 200 and JSON of the dogs
+    .then(dogs => res.status(200).json({ dogs: dogs }))
     // if an error occurs, pass it to the handler
     .catch(err => handle(err, res))
 })
