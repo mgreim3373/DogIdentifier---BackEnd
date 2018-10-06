@@ -83,10 +83,10 @@ router.post('/dogs', requireToken, (req, res) => {
   // set owner of new example to be current user
   req.body.dogs.owner = req.user.id
 
-  Dog.create(req.body.dog)
+  Dog.create(req.body.dogs)
     // respond to succesful `create` with status 201 and JSON of new "dog"
     .then(dog => {
-      res.status(201).json({ dog: dog.toObject() })
+      res.status(201).json({ dogs: dog.toObject() })
     })
     // if an error occurs, pass it off to our error handler
     // the error handler needs the error message and the `res` object so that it
