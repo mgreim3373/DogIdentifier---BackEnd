@@ -3,10 +3,11 @@ const express = require('express')
 // export GOOGLE_APPLICATION_CREDENTIALS="/Users/mikegreim/wdi/projects/dogFinder/express-api-template/keys.json"
 // const vision = require('@google-cloud/vision')
 // const client = new vision.ImageAnnotatorClient()
+const axios = require('axios')
 
 // google vision request
 // client
-//   .labelDetection('/Users/mikegreim/wdi/projects/dogFinder/express-api-template/1a5a259bdbdb2155a5cb46de25caeaba.jpg')
+//   .labelDetection('/Users/mikegreim/wdi/projects/dogFinder/express-api-template/download (1).jpeg')
 //   .then(results => {
 //     const labels = results[0].labelAnnotations;
 //
@@ -50,19 +51,19 @@ const router = express.Router()
 // GET /dogs
 router.get('/dogs', requireToken, (req, res) => {
   Dog.find()
-      // handle404 = if there is not data, return error message
-      // else return the data
-    .then(handle404)
-    .then(dogs => {
-      // `dogs` will be an array of Mongoose documents
-      // we want to convert each one to a POJO, so we use `.map` to
-      // apply `.toObject` to each one
-      return dogs.map(dog => dog.toObject())
-    })
-    // respond with status 200 and JSON of the dogs
-    .then(dogs => res.status(200).json({ dogs: dogs }))
-    // if an error occurs, pass it to the handler
-    .catch(err => handle(err, res))
+  // handle404 = if there is not data, return error message
+  // else return the data
+  .then(handle404)
+  .then(dogs => {
+    // `dogs` will be an array of Mongoose documents
+    // we want to convert each one to a POJO, so we use `.map` to
+    // apply `.toObject` to each one
+    return dogs.map(dog => dog.toObject())
+  })
+  // respond with status 200 and JSON of the dogs
+  .then(dogs => res.status(200).json({ dogs: dogs }))
+  // if an error occurs, pass it to the handler
+  .catch(err => handle(err, res))
 })
 
 // SHOW
@@ -70,20 +71,52 @@ router.get('/dogs', requireToken, (req, res) => {
 router.get('/dogs/:id', requireToken, (req, res) => {
   // req.params.id will be set based on the `:id` in the route
   Dog.findById(req.params.id)
-    .then(handle404)
-    // if `findById` is succesful, respond with 200 and "example" JSON
-    .then(dog => res.status(200).json({ dog: dog.toObject() }))
-    // if an error occurs, pass it to the handler
-    .catch(err => handle(err, res))
+  .then(handle404)
+  // if `findById` is succesful, respond with 200 and "example" JSON
+  .then(dog => res.status(200).json({ dog: dog.toObject() }))
+  // if an error occurs, pass it to the handler
+  .catch(err => handle(err, res))
 })
 
 // CREATE
 // POST /examples
 router.post('/dogs', requireToken, (req, res) => {
-  // set owner of new example to be current user
-  req.body.dogs.owner = req.user.id
 
-  Dog.create(req.body.dogs)
+  axios({
+    method: 'post',
+    url: 'https://vision.googleapis.com/v1/images:annotate?key=AIzaSyCq-dTqnVdPLLxetpLTfgvxl9Wo4RC2RWg',
+    data: {
+      "requests": [
+        {
+          "image": {
+            "source": {
+              "imageUri": "http://www.catster.com/wp-content/uploads/2017/08/A-fluffy-cat-looking-funny-surprised-or-concerned.jpg"
+            }
+          },
+          "features": [
+            {
+              "type": "LABEL_DETECTION",
+            }
+          ]
+        }
+      ]
+    }
+  }).then(function (response) {
+    const labels = response.data.responses[0].labelAnnotations
+    const filteredLabels = labels.map(label => ({ description: label.description, probability: label.score }))
+    const filteredLabels2 = function () {
+      if (filteredLabels.some(label => label.description === 'dog')) {
+      return filteredLabels.filter(label => (label.description !== 'dog like mammal' && label.description !== 'dog' && label.description !== 'dog breed'))
+    } else {
+      return 'not a dog'
+    }}
+
+
+    console.log('hi', filteredLabels2())})
+    // set owner of new example to be current user
+    req.body.dogs.owner = req.user.id
+
+    Dog.create(req.body.dogs)
     // respond to succesful `create` with status 201 and JSON of new "dog"
     .then(dog => {
       res.status(201).json({ dogs: dog.toObject() })
@@ -92,16 +125,16 @@ router.post('/dogs', requireToken, (req, res) => {
     // the error handler needs the error message and the `res` object so that it
     // can send an error message back to the client
     .catch(err => handle(err, res))
-})
+  })
 
-// UPDATE
-// PATCH /examples/5a7db6c74d55bc51bdf39793
-router.patch('/dogs/:id', requireToken, (req, res) => {
-  // if the client attempts to change the `owner` property by including a new
-  // owner, prevent that by deleting that key/value pair
-  delete req.body.dog.owner
+  // UPDATE
+  // PATCH /examples/5a7db6c74d55bc51bdf39793
+  router.patch('/dogs/:id', requireToken, (req, res) => {
+    // if the client attempts to change the `owner` property by including a new
+    // owner, prevent that by deleting that key/value pair
+    delete req.body.dog.owner
 
-  Dog.findById(req.params.id)
+    Dog.findById(req.params.id)
     .then(handle404)
     .then(dog => {
       // pass the `req` object and the Mongoose record to `requireOwnership`
@@ -124,12 +157,12 @@ router.patch('/dogs/:id', requireToken, (req, res) => {
     .then(() => res.sendStatus(204))
     // if an error occurs, pass it to the handler
     .catch(err => handle(err, res))
-})
+  })
 
-// DESTROY
-// DELETE /examples/5a7db6c74d55bc51bdf39793
-router.delete('/dogs/:id', requireToken, (req, res) => {
-  Dog.findById(req.params.id)
+  // DESTROY
+  // DELETE /examples/5a7db6c74d55bc51bdf39793
+  router.delete('/dogs/:id', requireToken, (req, res) => {
+    Dog.findById(req.params.id)
     .then(handle404)
     .then(dog => {
       // throw an error if current user doesn't own `dog`
@@ -141,6 +174,6 @@ router.delete('/dogs/:id', requireToken, (req, res) => {
     .then(() => res.sendStatus(204))
     // if an error occurs, pass it to the handler
     .catch(err => handle(err, res))
-})
+  })
 
-module.exports = router
+  module.exports = router
