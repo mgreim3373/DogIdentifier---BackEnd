@@ -4,6 +4,7 @@ const express = require('express')
 // const vision = require('@google-cloud/vision')
 // const client = new vision.ImageAnnotatorClient()
 const axios = require('axios')
+const key = require('../../keys.js')
 
 // google vision request
 // client
@@ -81,16 +82,17 @@ router.get('/dogs/:id', requireToken, (req, res) => {
 // CREATE
 // POST /examples
 router.post('/dogs', requireToken, (req, res) => {
-
+  console.log(key.ApiKey)
+  const image = req.body.dogs.image
   axios({
     method: 'post',
-    url: 'https://vision.googleapis.com/v1/images:annotate?key=AIzaSyCq-dTqnVdPLLxetpLTfgvxl9Wo4RC2RWg',
+    url: 'https://vision.googleapis.com/v1/images:annotate?key=' + key.ApiKey,
     data: {
       "requests": [
         {
           "image": {
             "source": {
-              "imageUri": "http://www.catster.com/wp-content/uploads/2017/08/A-fluffy-cat-looking-funny-surprised-or-concerned.jpg"
+              "imageUri": image
             }
           },
           "features": [
@@ -108,7 +110,7 @@ router.post('/dogs', requireToken, (req, res) => {
       if (filteredLabels.some(label => label.description === 'dog')) {
       return filteredLabels.filter(label => (label.description !== 'dog like mammal' && label.description !== 'dog' && label.description !== 'dog breed'))
     } else {
-      return 'not a dog'
+      return 'Not a dog!'
     }}
 
 
