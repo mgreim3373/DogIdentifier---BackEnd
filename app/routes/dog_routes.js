@@ -82,7 +82,6 @@ router.get('/dogs/:id', requireToken, (req, res) => {
 // CREATE
 // POST /examples
 router.post('/dogs', requireToken, (req, res) => {
-  console.log(key.ApiKey)
   const image = req.body.dogs.image
   axios({
     method: 'post',
@@ -105,19 +104,16 @@ router.post('/dogs', requireToken, (req, res) => {
     }
   }).then(function (response) {
     const labels = response.data.responses[0].labelAnnotations
-    const filteredLabels = labels.map(label => ({ description: label.description, probability: label.score }))
-    const filteredLabels2 = function () {
-      if (filteredLabels.some(label => label.description === 'dog')) {
-      return filteredLabels.filter(label => (label.description !== 'dog like mammal' && label.description !== 'dog' && label.description !== 'dog breed'))
+    const descriptProbFilter = labels.map(label => ({ description: label.description, probability: label.score }))
+    const labelFilter = function () {
+      if (descriptProbFilter.some(label => label.description === 'dog')) {
+      return descriptProbFilter.filter(label => (label.description !== 'dog like mammal' && label.description !== 'dog' && label.description !== 'dog breed'))
     } else {
       return 'Not a dog!'
     }}
-
-
-    console.log('hi', filteredLabels2())})
     // set owner of new example to be current user
     req.body.dogs.owner = req.user.id
-
+    req.body.dogs.label = labelFilter()
     Dog.create(req.body.dogs)
     // respond to succesful `create` with status 201 and JSON of new "dog"
     .then(dog => {
@@ -128,6 +124,9 @@ router.post('/dogs', requireToken, (req, res) => {
     // can send an error message back to the client
     .catch(err => handle(err, res))
   })
+
+  })
+
 
   // UPDATE
   // PATCH /examples/5a7db6c74d55bc51bdf39793
