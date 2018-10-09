@@ -90,7 +90,7 @@ router.post('/dogs', requireToken, (req, res) => {
     const descriptProbFilter = labels.map(label => ({ description: label.description, probability: label.score }))
     const labelFilter = function () {
       if (descriptProbFilter.some(label => label.description === 'dog')) {
-      return descriptProbFilter.filter(label => (label.description !== 'companion dog' && label.description !== 'snout' && label.description !== 'snout' && label.description !== 'dog like mammal' && label.description !== 'carnivoran' && label.description !== 'mammal' && label.description !== 'dog' && label.description !== 'dog breed'))
+      return descriptProbFilter.filter(label => (label.description !== 'dog breed group' && label.description !== 'puppy' && label.description !== 'companion dog' && label.description !== 'snout' && label.description !== 'snout' && label.description !== 'dog like mammal' && label.description !== 'carnivoran' && label.description !== 'mammal' && label.description !== 'dog' && label.description !== 'dog breed'))
     } else {
       return {description: 'Not a dog!'}
     }}
