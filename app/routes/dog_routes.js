@@ -1,24 +1,7 @@
 // Express docs: http://expressjs.com/en/api.html
 const express = require('express')
-// export GOOGLE_APPLICATION_CREDENTIALS="/Users/mikegreim/wdi/projects/dogFinder/express-api-template/keys.json"
-// const vision = require('@google-cloud/vision')
-// const client = new vision.ImageAnnotatorClient()
 const axios = require('axios')
 const key = require('../../keys.js')
-
-// google vision request
-// client
-//   .labelDetection('/Users/mikegreim/wdi/projects/dogFinder/express-api-template/download (1).jpeg')
-//   .then(results => {
-//     const labels = results[0].labelAnnotations;
-//
-//     console.log('data');
-//     labels.forEach(label => console.log(label.description, label.score));
-//   })
-//   .catch(err => {
-//     console.error('ERROR:', err);
-//   });
-// google vision request end
 
 // Passport docs: http://www.passportjs.org/docs/
 const passport = require('passport')
@@ -107,9 +90,9 @@ router.post('/dogs', requireToken, (req, res) => {
     const descriptProbFilter = labels.map(label => ({ description: label.description, probability: label.score }))
     const labelFilter = function () {
       if (descriptProbFilter.some(label => label.description === 'dog')) {
-      return descriptProbFilter.filter(label => (label.description !== 'dog like mammal' && label.description !== 'dog' && label.description !== 'dog breed'))
+      return descriptProbFilter.filter(label => (label.description !== 'companion dog' && label.description !== 'snout' && label.description !== 'snout' && label.description !== 'dog like mammal' && label.description !== 'carnivoran' && label.description !== 'mammal' && label.description !== 'dog' && label.description !== 'dog breed'))
     } else {
-      return 'Not a dog!'
+      return {description: 'Not a dog!'}
     }}
     // set owner of new example to be current user
     req.body.dogs.owner = req.user.id
