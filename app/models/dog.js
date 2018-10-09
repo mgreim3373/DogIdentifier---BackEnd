@@ -10,8 +10,7 @@ const dogSchema = new mongoose.Schema({
     required: true
   },
   label: {
-    type: Array,
-    required: true
+    type: Array
   },
   owner: {
     type: mongoose.Schema.Types.ObjectId,
