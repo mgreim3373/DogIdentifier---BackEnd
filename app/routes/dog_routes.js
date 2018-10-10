@@ -35,19 +35,28 @@ const router = express.Router()
 // GET /dogs
 router.get('/dogs', requireToken, (req, res) => {
   Dog.find()
-  // handle404 = if there is not data, return error message
-  // else return the data
-  .then(handle404)
-  .then(dogs => {
-    // `dogs` will be an array of Mongoose documents
-    // we want to convert each one to a POJO, so we use `.map` to
-    // apply `.toObject` to each one
-    return dogs.map(dog => dog.toObject())
-  })
-  // respond with status 200 and JSON of the dogs
-  .then(dogs => res.status(200).json({ dogs: dogs }))
-  // if an error occurs, pass it to the handler
-  .catch(err => handle(err, res))
+    // handle404 = if there is not data, return error message
+    // else return the data.
+    .then(handle404)
+    .then(dogs => {
+      // `dogs` will be an array of Mongoose documents
+      // we want to convert each one to a POJO, so we use `.map` to
+      // apply `.toObject` to each one
+      const dogsObjects = dogs.map(dog => dog.toObject()).sort((a, b) => a.priority > b.priority ? -1 : 1)
+      // Array of objects that belong to user to return
+      const userDogs = []
+      // Loop through all objects, and compare to user id
+      dogsObjects.forEach(dog => {
+        if (dog.owner.equals(req.user.id)) {
+          userDogs.push(dog)
+        }
+      })
+      return userDogs
+    })
+    // respond with status 200 and JSON of the dogs
+    .then(dogs => res.status(200).json({ dogs: dogs }))
+    // if an error occurs, pass it to the handler
+    .catch(err => handle(err, res))
 })
 
 // SHOW
@@ -90,7 +99,7 @@ router.post('/dogs', requireToken, (req, res) => {
     const descriptProbFilter = labels.map(label => ({ description: label.description, probability: label.score }))
     const labelFilter = function () {
       if (descriptProbFilter.some(label => label.description === 'dog')) {
-      return descriptProbFilter.filter(label => (label.description !== 'dog breed group' && label.description !== 'puppy' && label.description !== 'companion dog' && label.description !== 'snout' && label.description !== 'snout' && label.description !== 'dog like mammal' && label.description !== 'carnivoran' && label.description !== 'mammal' && label.description !== 'dog' && label.description !== 'dog breed'))
+      return descriptProbFilter.filter(label => (label.description !== 'vertebrate' && label.description !== 'dog breed group' && label.description !== 'puppy' && label.description !== 'companion dog' && label.description !== 'snout' && label.description !== 'snout' && label.description !== 'dog like mammal' && label.description !== 'carnivoran' && label.description !== 'mammal' && label.description !== 'dog' && label.description !== 'dog breed'))
     } else {
       return {description: 'Not a dog!'}
     }}
