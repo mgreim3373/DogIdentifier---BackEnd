@@ -1,7 +1,6 @@
 // Express docs: http://expressjs.com/en/api.html
 const express = require('express')
 const axios = require('axios')
-const key = require('../../keys.js')
 
 // Passport docs: http://www.passportjs.org/docs/
 const passport = require('passport')
@@ -77,7 +76,7 @@ router.post('/dogs', requireToken, (req, res) => {
   const image = req.body.dogs.image
   axios({
     method: 'post',
-    url: 'https://vision.googleapis.com/v1/images:annotate?key=' + key.ApiKey,
+    url: 'https://vision.googleapis.com/v1/images:annotate?key=' + process.env.API_KEY,
     data: {
       "requests": [
         {
