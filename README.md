@@ -4,7 +4,7 @@ This app represents my General Assembly cap stone project. It is a custom built 
 
 ## About
 
-This project was started with the goal of building a custom API using Express and MongoDb that had at least 4 RESTful routes for handling GET, POST, PUT/PATCH, and DELETE requests and was able to programatically make post calls to Google Vision's API. The requirements also specified that any actions that change data must be authenticated (data must be "owned" by the user performing the change) and that the user must have a relationship with at least one resource. The project began by creating entity relationship diagrams to ensure that the project met requirements. I then built out the application using Express and MongoDb, tested the API using curl scripts and linked it to my React web app.
+This project was started with the goal of building a custom API using Express and MongoDb that had at least 4 RESTful routes for handling GET, POST, PUT/PATCH, and DELETE requests and was able to programatically make post calls to Google Vision's API. The requirements also specified that any actions that change data must be authenticated (data must be "owned" by the user performing the change) and that the user must have a relationship with at least one resource. The project began by creating entity relationship diagrams to ensure that the project met requirements. I then built out the application using Express and MongoDb, tested the API using curl scripts and linked it to my React web app. I ran into several issues during this project, but I eventually solved the majority of them by researching the problems online, going through web tutorials and consulting colleagues.
 
 ## Unsolved Problems
 
@@ -175,6 +175,9 @@ HTTP/1.1 201 Created
 }
 ```
 #### POST Google Vision API
+
+Request:
+
 ```md
 curl --include --request PATCH https://vision.googleapis.com/v1/images:annotate?key= + API_key\
   --header "Content-Type: application/json" \
@@ -287,6 +290,7 @@ curl --include --request PATCH https://vision.googleapis.com/v1/images:annotate?
 
   Response:
   ```md
+  
   HTTP/1.1 200 OK
   {
     "dogs":{  "image":"https://i.kinja-img.com/gawker-media/image/upload/s--WFkXeene--/c_scale,f_auto,fl_progressive,q_80,w_800/ol9ceoqxidudap8owlwn.jpg",
@@ -297,3 +301,14 @@ curl --include --request PATCH https://vision.googleapis.com/v1/images:annotate?
     }
   }
   ```
+  ### ERD Link
+  
+  ERD:https://github.com/mgreim3373/DogIdentifier---BackEnd/blob/master/ERD.jpg
+  
+  ### Project Links
+  
+  Front-end deployed site: https://mgreim3373.github.io/DogIdentifier/#/
+
+  Back-end deployed site: https://pure-wildwood-82080.herokuapp.com/
+
+  Front-end repo: https://github.com/mgreim3373/DogIdentifier
