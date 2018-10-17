@@ -30,6 +30,8 @@ const requireToken = passport.authenticate('bearer', { session: false })
 // instantiate a router (mini app that only handles routes)
 const router = express.Router()
 
+const dogBreed = require('../../DogBreeds')
+
 // INDEX
 // GET /dogs
 router.get('/dogs', requireToken, (req, res) => {
@@ -95,16 +97,29 @@ router.post('/dogs', requireToken, (req, res) => {
     }
   }).then(function (response) {
     const labels = response.data.responses[0].labelAnnotations
-    const descriptProbFilter = labels.map(label => ({ description: label.description, probability: label.score }))
-    const labelFilter = function () {
-      if (descriptProbFilter.some(label => label.description === 'dog')) {
-      return descriptProbFilter.filter(label => (label.description !== 'vertebrate' && label.description !== 'dog breed group' && label.description !== 'puppy' && label.description !== 'companion dog' && label.description !== 'snout' && label.description !== 'snout' && label.description !== 'dog like mammal' && label.description !== 'carnivoran' && label.description !== 'mammal' && label.description !== 'dog' && label.description !== 'dog breed'))
-    } else {
-      return {description: 'Not a dog!'}
-    }}
+    const descripProbMap = labels.map(label => ({ description: label.description, probability: label.score }))
+    const isDog = function () {
+      if (descripProbMap.some(label => label.description === 'dog')) {
+        return descripProbMap
+      } else {
+        return {description: 'Not a dog!'}
+      }
+    }
+    console.log(isDog())
+    const dogBreedLowerCase = dogBreed.map(breed => breed.toLowerCase())
+
+    const breedChecker = function (label) {
+      if (dogBreedLowerCase.some(breed => breed === label.description)) {
+        return label
+      }
+    }
+
+    const breedCheckerMap = isDog().map(label => breedChecker(label))
+    const breedCheckerUndefinedFilter = breedCheckerMap.filter(breed => breed !== undefined)
+    console.log(breedCheckerUndefinedFilter)
     // set owner of new example to be current user
     req.body.dogs.owner = req.user.id
-    req.body.dogs.label = labelFilter()
+    req.body.dogs.label = breedCheckerUndefinedFilter
     Dog.create(req.body.dogs)
     // respond to succesful `create` with status 201 and JSON of new "dog"
     .then(dog => {
