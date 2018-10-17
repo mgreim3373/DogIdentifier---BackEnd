@@ -105,7 +105,6 @@ router.post('/dogs', requireToken, (req, res) => {
         return {description: 'Not a dog!'}
       }
     }
-    console.log(isDog())
     const dogBreedLowerCase = dogBreed.map(breed => breed.toLowerCase())
 
     const breedChecker = function (label) {
@@ -113,13 +112,33 @@ router.post('/dogs', requireToken, (req, res) => {
         return label
       }
     }
+console.log('firstdog', isDog())
+    const breedCheckerMap = function () {
+      if (isDog().description !== 'Not a dog!') {
+        return isDog().map(label => breedChecker(label))
+      }
+    }
+    console.log('seconddog', breedCheckerMap())
 
-    const breedCheckerMap = isDog().map(label => breedChecker(label))
-    const breedCheckerUndefinedFilter = breedCheckerMap.filter(breed => breed !== undefined)
-    console.log(breedCheckerUndefinedFilter)
+    const breedCheckerUndefinedFilter = function () {
+      if (isDog().description !== 'Not a dog!') {
+        return breedCheckerMap().filter(breed => breed !== undefined)
+      } else {
+        return isDog()
+      }
+    }
+
+    const dogDataDisplayReady = function () {
+      if (breedCheckerUndefinedFilter().length == 0) {
+        return {description: 'Unknown Dog'}
+      } else {
+        return breedCheckerUndefinedFilter()
+      }
+    }
+
     // set owner of new example to be current user
     req.body.dogs.owner = req.user.id
-    req.body.dogs.label = breedCheckerUndefinedFilter
+    req.body.dogs.label = dogDataDisplayReady()
     Dog.create(req.body.dogs)
     // respond to succesful `create` with status 201 and JSON of new "dog"
     .then(dog => {
