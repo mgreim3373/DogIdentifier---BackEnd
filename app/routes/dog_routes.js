@@ -128,14 +128,27 @@ console.log('firstdog', isDog())
       }
     }
 
+    const capitalizer = function (breed) {
+      return breed.description.toUpperCase()
+    }
+
     const dogDataDisplayReady = function () {
       if (breedCheckerUndefinedFilter().length == 0) {
         return {description: 'Unknown Dog'}
-      } else {
-        return breedCheckerUndefinedFilter()
+      } else if (breedCheckerUndefinedFilter().description == 'Not a dog!') {
+        return breedCheckerUndefinedFilter()}
+      else {
+        const capitalizedBreed = breedCheckerUndefinedFilter()
+          .map((breed) => (
+            {
+              description: breed.description.toUpperCase(),
+              probability: breed.probability * 100
+            }
+          ))
+        return capitalizedBreed
       }
     }
-
+console.log('forthconddog', dogDataDisplayReady())
     // set owner of new example to be current user
     req.body.dogs.owner = req.user.id
     req.body.dogs.label = dogDataDisplayReady()
