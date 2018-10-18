@@ -129,7 +129,10 @@ console.log('firstdog', isDog())
     }
 
     const capitalizer = function (breed) {
-      return breed.description.toUpperCase()
+      return breed.toLowerCase()
+        .split(' ')
+        .map((s) => s.charAt(0).toUpperCase() + s.substring(1))
+        .join(' ')
     }
 
     const dogDataDisplayReady = function () {
@@ -141,7 +144,7 @@ console.log('firstdog', isDog())
         const capitalizedBreed = breedCheckerUndefinedFilter()
           .map((breed) => (
             {
-              description: breed.description.toUpperCase(),
+              description: capitalizer(breed.description),
               probability: breed.probability * 100
             }
           ))
