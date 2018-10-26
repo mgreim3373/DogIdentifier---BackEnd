@@ -1,18 +1,12 @@
-## Dog Identifier
+## Dog Identifier - Back-End
 
-This app represents my General Assembly cap stone project. It is a custom built interactive web application for identifying dog breeds from pictures and storing them. It utilizes Saas, Google Vision’s API and a custom built API.
+This app represents my General Assembly capstone project. It is a interactive React app for identifying dog breeds from user pictures and storing them. 
 
-## About
-
-This project was started with the goal of building a custom API using Express and MongoDb that had at least 4 RESTful routes for handling GET, POST, PUT/PATCH, and DELETE requests and was able to programatically make post calls to Google Vision's API. The requirements also specified that any actions that change data must be authenticated (data must be "owned" by the user performing the change) and that the user must have a relationship with at least one resource. The project began by creating entity relationship diagrams to ensure that the project met requirements. I then built out the application using Express and MongoDb, tested the API using curl scripts and linked it to my React web app. I ran into several issues during this project, but I eventually solved the majority of them by researching the problems online, going through web tutorials and consulting colleagues.
-
-## Unsolved Problems
-
-I plan on updating this project in the future by allowing users to upload their own image files to the app, store them on AS3 and process them with Google's Vision API.
+This repo contains the back-end for my Dog Idenifier app. It enables users to store images on Amazon S3, process them using Google Vision's API, and preform CRUD on a custom built Express API utilizing MongoDB that contains photo titles and links, and user login credentials.
 
 ## List of Technologies Used
 
-MongoDb, Express, Node.js, Bcrypt, Passport, Axios, Heroku, Google Vision API
+Node.js, MongoDb, Express, Bcrypt, Passport, Axios, Heroku, Google Vision API, Amazon S3
 
 ## Installation
 
@@ -27,6 +21,39 @@ MongoDb, Express, Node.js, Bcrypt, Passport, Axios, Heroku, Google Vision API
  ```
 6. Ensure the API is functioning properly by running `npm run server`.
 7. Run the development server with npm start.
+
+##Filtering Google Vision API's Post Response
+
+Extracting and organizing the data from Google's post response was one of the biggest challenges of this project. Google's post responses initially contain an array of label annotation objects similar to the example below.
+
+``` "labelAnnotations": [
+      {
+       "mid": "/m/0bt9lr",
+       "description": "dog",
+       "score": 0.9887024,
+       "topicality": 0.9887024
+      },
+      {
+       "mid": "/m/01z5f",
+       "description": "dog like mammal",
+       "score": 0.949399,
+       "topicality": 0.949399
+      },
+       {
+       "mid": "/m/01z5f",
+       "description": "cockapoo",
+       "score": 0.79334,
+       "topicality": 0.79334
+      },
+     ]
+     ```
+To process this data, I had to complete the following:
+
+1. Isolate the "description" and "store" key-value pairs of each object.
+2. Check to ensure that at least one of the objects in the array has a "description" key-value equal to "dog". If not, the function  returns the response "Not a dog!". 
+3. Compare the "description" key-value of each object to an array of known dog breeds and only return objects where the description is equal to a known breed.
+4. Preform a final check on the array to ensure that it contains at least one object with a "description" and "store" key value pair. If the array is empty, the original response from Google must have contained an object with a "description" key-value equal to "dog", but did not contain a "description" key-value equal to any known dog breed. If this is the case, the function returns the response "Unknown dog!".
+
 
 #### POST /sign-up
 
