@@ -334,8 +334,8 @@ curl --include --request PATCH https://vision.googleapis.com/v1/images:annotate?
   
   ### Project Links
   
-  Front-end deployed site: https://mgreim3373.github.io/DogIdentifier/#/
+  Front-end deployed site: https://mgreim3373.github.io/DogIdentifier-Front-End/#/
 
   Back-end deployed site: https://pure-wildwood-82080.herokuapp.com/
 
-  Front-end repo: https://github.com/mgreim3373/DogIdentifier
+  Front-end repo: https://github.com/mgreim3373/DogIdentifier-Front-End
