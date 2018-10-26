@@ -22,7 +22,7 @@ Node.js, MongoDb, Express, Bcrypt, Passport, Axios, Heroku, Google Vision API, A
 6. Ensure the API is functioning properly by running `npm run server`.
 7. Run the development server with npm start.
 
-####Filtering Google Vision API's Post Response
+## Filtering Google Vision API's Post Response
 
 Extracting and organizing the data from Google's post response was one of the biggest challenges of this project. Google's post responses initially contain an array of label annotation objects similar to the example below.
 
