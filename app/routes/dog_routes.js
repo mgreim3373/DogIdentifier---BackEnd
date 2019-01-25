@@ -98,10 +98,12 @@ router.post('/dogs', requireToken, (req, res) => {
     }
   }).then(function (response) {
     const labels = response.data.responses[0].labelAnnotations
+    console.log('whhhhy', labels)
     const descripProbMap = labels.map(label => ({ description: label.description, probability: label.score }))
+    console.log('descripProbMap', descripProbMap)
     // Check if array of label objects contains any descriptions with the value dog
     const isDog = function () {
-      if (descripProbMap.some(label => label.description === 'dog')) {
+      if (descripProbMap.some(label => label.description.toLowerCase() === 'dog')) {
         return descripProbMap
       } else {
         return {description: 'Not a dog!'}
@@ -113,7 +115,7 @@ router.post('/dogs', requireToken, (req, res) => {
     // function to check if description value from google vision is a known
     // dog breed
     const breedChecker = function (label) {
-      if (dogBreedLowerCase.some(breed => breed === label.description)) {
+      if (dogBreedLowerCase.some(breed => breed === label.description.toLowerCase())) {
         return label
       }
     }
